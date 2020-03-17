@@ -26,61 +26,62 @@ class kimLee():
 
 		print(self.group)
 
+	
+ 	def cal_cost(group):
+		totaldist=0
+		dist=0
+		startpose = [0,0]
+		endpose = [0,0]
+	#right now its 3 seperate lines ,will change it for connected lines 
+		for i in range(0,3):
+			startpose = group[i][0]
+			endpose = group[i][1]
+			dist = math.sqrt( (endpose[0]-startpose[0])**2 + (endpose[1]-startpose[1])**2 )
+			totaldist = totaldist+dist
 
-# 	def cal_cost(self, group[]):
-# 		totaldist=0
-# 		dist=0
-# 		startpose[]=[0,0]
-# 		endpose[]=[0,0]
-# 		#right now its 3 seperate lines ,will change it for connected lines 
-# 		for i in range(0,3):
-# 			startpose[]=group[i][0]
-# 			endpose[]=group[i][1]
-# 			dist=math.sqrt( (endpose[0]-startpose[0])**2 + (endpose[1]-startpose[1])**2 )
-# 			totaldist=totaldist+dist
-
-# 		return totaldist
+		return totaldist
 
 # #initial pop will be like pop=[cost1,cost2,cost3]
 
 
-# #Evaluation (can find the pop with bestcost and hence bestpop....Fitness check)
-# 	def Eval(pop):
+#Evaluation (can find the pop with bestcost and hence bestpop....Fitness check)
+	def Eval(pop):
+		for j in pop
+			group=pop[j]
+			for i in range(0,3):           
+				cost[i] = cal_cost(group[0])	
+			mcost = max(cost)
+			bestcost = mcost
+			for k in range(0,3):
+				if (cost[k]<bestcost):
+					bestcost=cost[k]
+					idx=k
+					bestpop=j+1
+			bestparents = np.append(bestparents,group[idx]) 		
 
-# 		cost1=cal_cost(group1)
-# 		cost2=cal_cost(group2)
-# 		cost3=cal_cost(group3)
-# 		costs=[cost1,cost2,cost3]
-# 		cost=max(costs)
-# 		bestcost=cost
-# 		if (cost<bestcost):
-# 			bestcost=cost
-# 			bestpop=pop
-
-# 		return bestcost
-
-# #Now apply genetic algorithm on this initial pop
-
-
-
-# #GA
+		return bestparents
 
 
-# 	def crossover(parents,offspring_size):
-# 		offspring=np.empty(offspring_size)	#initialise 
-# 		crossover_pt=numpy.uint8(offspring_size[1]/2)
+	def crossover(parents,offspring_size):
+ 		offspring=np.empty(offspring_size)	#initialise 
+ 		crossover_pt=numpy.uint8(offspring_size[1]/2)
 
-# 		for k in range(offspring_size[0]):
-# 			parent1_id = k%parents.shape[0]
-# 			parent2_id = (k+1)%parents.shape[0]
-# 			offspring[k,0:crossover_pt]=parents[parent1_id,0:crossover_pt]
-# 			offspring[k,crossover_pt]=parents[parent2_id,crossover_pt:]
+ 		for k in range(offspring_size[0]):
+ 			parent1_id = k%parents.shape[0]
+ 			parent2_id = (k+1)%parents.shape[0]
+ 			offspring[k,0:crossover_pt]=parents[parent1_id,0:crossover_pt]
+ 			offspring[k,crossover_pt]=parents[parent2_id,crossover_pt:]
 
-# 		return offspring
+ 		return offspring
 
-# #adding variations to offspring using mutation
-# 	def mutation(offspring):
-# 		for id in range(offspring.shape[0]):
+#adding variations to offspring using mutation
+
+	def mutation(offspring):
+		for idx in range(offspring.shape[0]):
+			random_value = np.random.uniform(-1.0,1.0,1)
+			offspring[idx,4] = offspring[idx,4] + random_value
+		return offspring
+
 
 if __name__ == '__main__':
 	lineSet = np.array([
@@ -92,6 +93,32 @@ if __name__ == '__main__':
 				])
 
 	test = kimLee(bots = 3, lines = lineSet)
+
+	pop = np.empty([1,4],dtype =float)
+ 	
+ 	#defining the pop for first gen
+ 	grp = test.self.group
+
+ 	pop[0] = grp
+
+ 	for i in range(1,4):
+ 		
+ 		bparents = test.Eval(pop) #excluding the one with max cost 
+ 		
+ 		#updating next pop
+ 		offs_size =
+ 		cross_off = test.crossover(bparents,offs_size)
+ 		mut_off = test.mutation(cross_off)
+ 		pop[i] = np.append(pop[i],mut_off)
+ 		
+
+
+	 		
+
+
+
+	
+	 
 
 
 
