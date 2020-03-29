@@ -4,7 +4,7 @@ import math
 
 class kimLee():
 
-	def __init__(self, bots, lines):
+	def __init__(self, bots, lines, botpos ,pop):
 	
 
 		#5 lines represented by their start pose and end pose
@@ -17,7 +17,10 @@ class kimLee():
 		#making population and selecting best population using genetic algorithm
 		#now cost of these lines will act as weights so we will arrange these weights(costs) in group of three lines for 
 		#let initial pop has three chromosomes as array of three cost in pattern (1,2,3)  (2,3,4)   (3,4,5) according to 3 bots 
-		
+		self.botspos=np.empty((0, 1, 2), float)
+		#Assign values of botpos:
+
+
 		self.group = np.empty((0, 2, 2), float)
 		self.group = [self.group for i in range(self.bots)]
 
@@ -26,18 +29,35 @@ class kimLee():
 
 		print(self.group)
 
-	
- 	def cal_cost(group):
+	    self.pop = np.empty([1,numpop],dtype =float)
+
+	    self.pop[0] = self.group  #first pop is initial set of group
+
+
+
+ 	def cal_cost(group,groupnum):
+
+ 		oldend = botpos[groupnum]
 		totaldist=0
 		dist=0
 		startpose = [0,0]
 		endpose = [0,0]
+		dtemp = #some big val 
+
 	#right now its 3 seperate lines ,will change it for connected lines 
-		for i in range(0,3):
-			startpose = group[i][0]
-			endpose = group[i][1]
-			dist = math.sqrt( (endpose[0]-startpose[0])**2 + (endpose[1]-startpose[1])**2 )
-			totaldist = totaldist+dist
+		for i in range(0,self.bots):
+			for j in range(0,sel.bots):
+				startpose = group[j][0]
+				endpose = group[j][1]
+				dist = math.sqrt( (endpose[0]-oldend[0])**2 + (endpose[1]-oldend[1])**2 )
+				
+				if (dist<dtemp ):
+					dtemp=dist
+					nearend = endpose
+	
+			
+			totaldist = totaldist+dtemp
+			oldend = nearend
 
 		return totaldist
 
@@ -94,24 +114,15 @@ if __name__ == '__main__':
 
 	test = kimLee(bots = 3, lines = lineSet)
 
-	pop = np.empty([1,4],dtype =float)
+	
  	
  	#defining the pop for first gen
  	grp = test.self.group
 
- 	pop[0] = grp
+ 	
 
- 	for i in range(1,4):
+ 	
  		
- 		bparents = test.Eval(pop) #excluding the one with max cost 
- 		
- 		#updating next pop
- 		offs_size =
- 		cross_off = test.crossover(bparents,offs_size)
- 		mut_off = test.mutation(cross_off)
- 		pop[i] = np.append(pop[i],mut_off)
- 		
-
 
 	 		
 
