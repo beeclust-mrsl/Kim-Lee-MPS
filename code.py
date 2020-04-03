@@ -1,5 +1,7 @@
 import numpy as np
 import math
+import numpy as np
+import math
 class kimLee():
      def __init__(self, bots, lines, botpos):
              self.lines = lines
@@ -11,24 +13,42 @@ class kimLee():
              for index, val in enumerate(self.lines):
                      self.group[index % self.bots] = np.append(self.group[index % self.bots], np.array([val]), axis = 0)
              print(self.group)
-
      def cal_cost(self,group,groupnum):
              oldend = botpos[groupnum]
-             totaldist=0
-             dist=0
+             print("initial botpos:")
+             print(oldend)
+             grp=group[groupnum]
+             totaldist = 0
+             dist2 =  0
+             p=1
              startpose = np.array([0,0])
              endpose = np.array([0,0])
-             dtemp = 100
-             for i in range(0,self.bots):
-                     for j in range(0,self.bots):
-                             startpose = group[j][0][0]
-                             endpose = group[j][0][1]
-                             dist = math.sqrt( (endpose[0]-oldend[0])**2 + (endpose[1]-oldend[1])**2 )
-                             if (dist<dtemp ):
-                                     dtemp=dist
-                                     nearend = endpose
-                     totaldist = totaldist+dtemp
-                     oldend = nearend
+             dtemp2 = 999999
+             print("group size and group:")
+             print(len(grp))
+             print(grp)
+             #print(oldend)
+             while (p<=len(grp)):
+                for x in range(0,len(grp)):
+                             for y in range(0,2):
+                                     nextpose = grp[x][y]
+                                     #print(nextpose)
+                                     dist2 = math.sqrt( (nextpose[0]-oldend[0])**2 + (nextpose[1]-oldend[1])**2 )
+                                     if (dist2<dtemp2 ):
+                                         dtemp2=dist2
+                                         r=x
+                                         s=y
+                                         totaldist=totaldist+dtemp2+math.sqrt( (grp[x][0][0]-grp[x][1][0])**2 + (grp[x][0][1]-grp[x][1][1])**2 )
+                #print(grp)
+                #print(p)
+                sn= int(not s)
+                oldend=grp[r][sn]
+                oldend2=grp[r][s]
+                print("nearest line point")
+                print(oldend2)
+                print("other end of the same line")
+                print(oldend)
+                p=p+1
              return totaldist
 
 	 def Eval(pop):
