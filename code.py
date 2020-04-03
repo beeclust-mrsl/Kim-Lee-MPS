@@ -1,7 +1,5 @@
 import numpy as np
 import math
-import numpy as np
-import math
 class kimLee():
      def __init__(self, bots, lines, botpos):
              self.lines = lines
@@ -15,6 +13,7 @@ class kimLee():
              print(self.group)
      def cal_cost(self,group,groupnum):
              oldend = botpos[groupnum]
+             oldend2=oldend
              print("initial botpos:")
              print(oldend)
              grp=group[groupnum]
@@ -23,22 +22,23 @@ class kimLee():
              p=1
              startpose = np.array([0,0])
              endpose = np.array([0,0])
-             dtemp2 = 999999
              print("group size and group:")
              print(len(grp))
              print(grp)
+             i=0
              #print(oldend)
              while (p<=len(grp)):
-                for x in range(0,len(grp)):
+                dtemp2 = 999999 
+                for x in range(i,len(grp)):
                              for y in range(0,2):
                                      nextpose = grp[x][y]
                                      #print(nextpose)
                                      dist2 = math.sqrt( (nextpose[0]-oldend[0])**2 + (nextpose[1]-oldend[1])**2 )
-                                     if (dist2<dtemp2 ):
-                                         dtemp2=dist2
-                                         r=x
-                                         s=y
-                                         totaldist=totaldist+dtemp2+math.sqrt( (grp[x][0][0]-grp[x][1][0])**2 + (grp[x][0][1]-grp[x][1][1])**2 )
+                                     if (dist2<dtemp2 and dist2!=0):
+                                             dtemp2=dist2
+                                             r=x
+                                             s=y
+                                             totaldist=totaldist+dtemp2+math.sqrt( (grp[x][0][0]-grp[x][1][0])**2 + (grp[x][0][1]-grp[x][1][1])**2 )
                 #print(grp)
                 #print(p)
                 sn= int(not s)
@@ -49,6 +49,7 @@ class kimLee():
                 print("other end of the same line")
                 print(oldend)
                 p=p+1
+                i=i+1
              return totaldist
 
 	 def Eval(pop):
