@@ -76,13 +76,18 @@ class kimLee():
 
 
 	# Heuristics func in paper: Return distance/cost of a single input group
-	def groupDist(self, sol):
+	def groupDist(self, group):
 		index_line = 0
-		cost = 0
-		for index_bot in sol:
+		c = np.empty(len(self.pose))
+		for i in range(len(c)):
+			c[i] = 0
+			
+		for index_bot in group:
 			dist = self.nextDist(pose = self.pose[index_bot], line = self.lines[index_line], index_bot = index_bot)
-			cost = cost + dist + self.length[index_line]
-			index_line = index_line + 1		
+			c[index_bot] = c[index_bot] + dist + self.length[index_line]
+			index_line = index_line + 1
+			
+		cost = max(c)
 		return cost
 
 
