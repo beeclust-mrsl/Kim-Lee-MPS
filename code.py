@@ -58,7 +58,7 @@ class kimLee():
 	# Function D in paper: returns dist b/w oldpose and next line
 	def nextDist(self, pose, line, index_bot):
 		x0 = pose[0]
-		x1 = pose[1]
+		y0 = pose[1]
 		x1 = line[0][0]
 		y1 = line[0][1]
 		x2 = line[1][0]
@@ -69,10 +69,10 @@ class kimLee():
 		
 		if d1 < d2:
 			self.pose[index_bot] = [x2, y2]
+			return d1
 		else:
 			self.pose[index_bot] = [x1, y1]
-		dist = min(d1,d2)
-		return dist
+			return d2
 
 
 	# Heuristics func in paper: Return distance/cost of a single input group
