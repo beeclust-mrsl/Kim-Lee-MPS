@@ -10,6 +10,8 @@ class kimLee():
 
 		#self.numViduals = 
 		self.population = []
+		self.fitness = []
+		
 		self.group = np.empty((0, 2, 2), float)
 		self.group = [self.group for i in range(self.bots)]
 
@@ -32,7 +34,8 @@ class kimLee():
 			
 	# Initialize population
 	def initPop(self):
-		self.population = np.random.random_integers(low = 0, high = self.bots-1, size = (self.bots, self.numLines))
+		pop_size = 4
+		self.population = np.random.random_integers(low = 0, high = self.bots-1, size = (pop_size, self.numLines))
 		print (self.population)
 		#First initialize individuals then stack them into a list
 		#for i in range(self.numViduals):
@@ -53,12 +56,33 @@ class kimLee():
 
 
 	# Function D in paper: returns dist b/w oldpose and next line
-	def nextDist(self, pose, line):
+	def nextDist(self, pose, line, index_bot):
+		x0 = pose[0]
+		x1 = pose[1]
+		x1 = line[0][0]
+		y1 = line[0][1]
+		x2 = line[1][0]
+		y2 = line[1][1]
+		
+		d1 = math.sqrt((x1 - x0)**2 + (y1 - y0)**2)
+		d2 = math.sqrt((x2 - x0)**2 + (y2 - y0)**2)
+		
+		if d1 < d2:
+			self.pose[index_bot] = [x2, y2]
+		else:
+			self.pose[index_bot] = [x1, y1]
+		dist = min(d1,d2)
 		return dist
 
 
 	# Heuristics func in paper: Return distance/cost of a single input group
-	def groupDist(self, group):
+	def groupDist(self, sol):
+		index_line = 0
+		cost = 0
+		for index_bot in sol:
+			dist = self.nextDist(pose = self.pose[index_bot], line = self.lines[index_line], index_bot = index_bot)
+			cost = cost + dist + self.length[index_line]
+			index_line = index_line + 1		
 		return cost
 
 
@@ -80,7 +104,12 @@ class kimLee():
 	# Main function: similar to fig 6 in paper.
 	def main(self):
 		self.initPop()
-
+		
+		for sol in self.population:
+			self.pose = pose #initial pose should not change for diff soln
+			cost = self.groupDist(sol)
+			self.fitness.append(cost)
+		print('Fitness:\n', self.fitness)
 
 # ToDo Later: Vizualizer function to plot/animate algorithm
 class vizualizer():
