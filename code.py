@@ -20,6 +20,11 @@ class kimLee():
 		
 		#plotting
 		self.piterations = []
+		
+		#To return to main
+		self.final_best_pop = 0
+		self.final_best_cost = 0
+		self.final_line = []
 	
 	def initPop(self):
 		pop_size  = 4
@@ -213,11 +218,11 @@ class kimLee():
 					self.main()				#Recursive call
 				else:
 					idx =  self.bestPop_cost.index(min(self.bestPop_cost))
-					final_best_pop = self.bestPop[idx]
-					final_best_cost = self.bestPop_cost[idx]
+					self.final_best_pop = self.bestPop[idx]
+					self.final_best_cost = self.bestPop_cost[idx]
 					
 					#GETTING RELEVANT DATA: FINAL POPULATION
-					print ('\nFinal Best Population: ', final_best_pop, '\nCost:', final_best_cost)
+					print ('\nFinal Best Population: ', self.final_best_pop, '\nCost:', self.final_best_cost)
 					pose = self.pose
 					groups = self.groupGenes(final_best_pop)
 					
@@ -230,6 +235,7 @@ class kimLee():
 						
 						print ('line',bot_index,line)
 						
+						self.final_line.append(line)
 						c = self.groupDist(line)
 						groupscost.append(c)
 					
@@ -239,12 +245,43 @@ class kimLee():
 					plt.xlabel('X axis')
 					plt.ylabel('Y axis')
 					plt.show()
-'''
+
 class visualizer():
+	def __init__(self, lines):
+		self.x_pts = []
+		self.y_pts = []
+		
+		self.fig = plt.figure()
+		self.ax = plt.axes(xlim = (0, 60), y_lim = (0,60))
+		self.lines = lines 
+		
 	def plot(self):
+		idx = 0
+		clrs = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'w-']
+		mark_pts = ['bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'wo']
+		
+		for line in self.lines:
+			x = list(line[i][0] for i in range(len(line)))
+			y = list(line[i][1] for i in range(len(line)))
+			
+			self.x_pts.append(x)
+			self.y_pts.append(y)
+			
+			p1 = plt.plot(x, y, clrs[idx])
+			p2 = plt.plot(x, y, mark_pts[idx])
+			
+			idx = idx + 1
+			if (idx == len(clrs)):
+				idx = 0
+		plt.show()
+	'''	
 	def animate(self):
 	def visualizer(self):
-'''
+	'''	
+	def main(self):
+		self.plot()
+		
+
 if __name__ == '__main__':
 	#Array of lines to be printed. Format: [(start_x, start_y), (end_x, end_y)]
 	lineSet = np.array([
@@ -259,3 +296,6 @@ if __name__ == '__main__':
 	pose = np.array([(0,1), (1,2), (2,3)])
 	test = kimLee(numBots = pose.shape[0], lines = lineSet, pose = pose)
 	test.main()
+	
+	display = visualizer(lines = test.final_line)
+	display.main()
