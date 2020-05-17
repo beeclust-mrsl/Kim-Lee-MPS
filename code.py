@@ -264,9 +264,6 @@ class visualizer():
 			x = list(line[i][0] for i in range(len(line)))
 			y = list(line[i][1] for i in range(len(line)))
 			
-			self.x_pts.append(x)
-			self.y_pts.append(y)
-			
 			p1 = plt.plot(x, y, clrs[idx])
 			p2 = plt.plot(x, y, mark_pts[idx])
 			
@@ -274,12 +271,55 @@ class visualizer():
 			if (idx == len(clrs)):
 				idx = 0
 		plt.show()
+	
+	def points_on_line(self):
+		for line in self.lines:
+			lx = []
+			ly = []
+			for index in range(len(line) - 1):
+				pt1 = line[index]
+				pt2 = line[index+1]
+				
+				x1 = pt1[0]
+				y1 = pt1[1]
+				x2 = pt2[0]
+				y2 = pt2[1]
+				
+				num_btw = 10
+				for t in range(num_btw):
+					x = x1 + (x2-x1) * (1/num_btw) * t
+					y = y1 + (y2-y1) * (1/num_btw) * t
+					
+					lx.append(x)
+					ly.append(y)
+			
+			self.x_pts.append(lx)
+			self.y_pts.append(ly)
+	
+	def animation(self):
+		mark_pts = ['bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'wo']
+		idx = 0
+		for ptx, pty in zip(self.x_pts, self.y_pts):
+			self.fig = plt.figure()
+			self.ax = plt.axes(xlim = (0,60), ylim = (0,60))
+			
+			bot, = plt.plot(ptx[0], pty[0], mark_pts[idx])
+			idx = idx + 1
+			
+			def animate(i):
+				bot.set_data(ptx[i], pty[i])
+				return bot,
+			
+			Anim = animation.FuncAnimation(self.fig, animate, frames = len(ptx), interval = 20, blit = True)
+			plt.show()
+		
 	'''	
-	def animate(self):
 	def visualizer(self):
 	'''	
 	def main(self):
 		self.plot()
+		self.points_on_line()
+		self.animation()
 		
 
 if __name__ == '__main__':
