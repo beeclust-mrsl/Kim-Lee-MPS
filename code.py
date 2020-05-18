@@ -252,10 +252,9 @@ class visualizer():
 		self.y_pts = []
 		
 		self.fig = plt.figure()
-		self.ax = plt.axes(xlim = (0, 60), y_lim = (0,60))
 		self.lines = lines 
 		
-	def plot(self):
+	def plot(self, p1):
 		idx = 0
 		clrs = ['b-', 'g-', 'r-', 'c-', 'm-', 'y-', 'k-', 'w-']
 		mark_pts = ['bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'wo']
@@ -264,13 +263,13 @@ class visualizer():
 			x = list(line[i][0] for i in range(len(line)))
 			y = list(line[i][1] for i in range(len(line)))
 			
-			p1 = plt.plot(x, y, clrs[idx])
-			p2 = plt.plot(x, y, mark_pts[idx])
+			p1.plot(x, y, clrs[idx])
+			p1.plot(x, y, mark_pts[idx])
 			
 			idx = idx + 1
 			if (idx == len(clrs)):
 				idx = 0
-		plt.show()
+		#plt.show()
 	
 	def points_on_line(self):
 		for line in self.lines:
@@ -285,7 +284,7 @@ class visualizer():
 				x2 = pt2[0]
 				y2 = pt2[1]
 				
-				num_btw = 10
+				num_btw = 3*int(math.sqrt((x2 - x1)**2 + (y2 - y1)**2))	#Number of points btw 2 points
 				for t in range(num_btw):
 					x = x1 + (x2-x1) * (1/num_btw) * t
 					y = y1 + (y2-y1) * (1/num_btw) * t
@@ -299,25 +298,40 @@ class visualizer():
 	def animation(self):
 		mark_pts = ['bo', 'go', 'ro', 'co', 'mo', 'yo', 'ko', 'wo']
 		idx = 0
-		for ptx, pty in zip(self.x_pts, self.y_pts):
-			self.fig = plt.figure()
-			self.ax = plt.axes(xlim = (0,60), ylim = (0,60))
-			
-			bot, = plt.plot(ptx[0], pty[0], mark_pts[idx])
-			idx = idx + 1
-			
-			def animate(i):
-				bot.set_data(ptx[i], pty[i])
-				return bot,
-			
-			Anim = animation.FuncAnimation(self.fig, animate, frames = len(ptx), interval = 20, blit = True)
-			plt.show()
+		Anim = []
+		p1 = self.fig.add_subplot(111)
+		self.plot(p1)
 		
+		def next(index):
+			color_id = index
+			
+			if (color_id+1 == len(mark_pts)):
+				color_id = 5
+			
+			pt, = p1.plot([], [], mark_pts[color_id+1])
+			
+			def bot():
+				i = 0
+				while(True):
+					yield i
+					i += 1
+			def run(c):
+				pt.set_data(self.x_pts[index][c], self.y_pts[index][c])
+			
+			Anim.append(animation.FuncAnimation(self.fig,run,bot,interval=1))
+			
+			if index == len(self.x_pts) :
+				plt.show()
+			else:
+				index = index + 1
+				next(index) #Recursive Function as a loop
+		
+		next(index = -1)
 	'''	
 	def visualizer(self):
 	'''	
 	def main(self):
-		self.plot()
+		#self.plot()
 		self.points_on_line()
 		self.animation()
 		
