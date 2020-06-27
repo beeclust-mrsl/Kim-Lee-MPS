@@ -2,6 +2,8 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import sys
+import cv2
+
 sys.setrecursionlimit(10**6) 
 
 class kimLee():
@@ -101,7 +103,7 @@ class kimLee():
 				line.append(end)
 				
 				pose[bot_index] = end
-				group.remove(group[idx])
+				del group[idx]
 				line1 = self.nextline(pose, group, bot_index, line)
 				return line
 	
@@ -173,78 +175,81 @@ class kimLee():
 	def main(self):
 		if (len(self.population) == 0):
 			self.initPop()  
-			const_pose = list(self.pose)
-			fitness = []				# To store costs for individuals
+		
+		const_pose = list(self.pose)
+		fitness = []				# To store costs for individuals
 			
-			for pos_sol in self.population:
-				pose = np.array(const_pose)	#initial pose should remain the same
-				groups = self.groupGenes(pos_sol)  #Divides into groups
+		for pos_sol in self.population:
+			pose = np.array(const_pose)	#initial pose should remain the same
+			groups = self.groupGenes(pos_sol)  #Divides into groups
 				
-				groupscost = []
-				bot_index = 0
-				for group in groups:
-					line = self.nextline(pose, group, bot_index, line = [])	#path to be followed
-					bot_index = bot_index + 1
-					c = self.groupDist(line)	#Cost for the path
-					groupscost.append(c)
-					maxCost = self.groupCost(groupscost)	#Max cost of the group/Final cost
-					fitness.append(maxCost)			#fitness of the individual
+			groupscost = []
+			bot_index = 0
+			for group in groups:
+				line = self.nextline(pose, group, bot_index, line = [])	#path to be followed
+				bot_index = bot_index + 1
+				c = self.groupDist(line)	#Cost for the path
+				groupscost.append(c)
+			
+			maxCost = self.groupCost(groupscost)	#Max cost of the group/Final cost
+			fitness.append(maxCost)			#fitness of the individual
 				
-				self.evaluate(fitness)				#Select and store best population
-				self.piterations.append(self.iteration)		#for plotting
+		self.evaluate(fitness)				#Select and store best population
+		self.piterations.append(self.iteration)		#for plotting
 				
-				if self.iteration == 0:
-					try:
-						self.gen = int(input('Enter No. of generations (default 100): '))	#Change number of generation
-					except:
-						self.gen = 100
+		if self.iteration == 0:
+			try:
+				self.gen = int(input('Enter No. of generations (default 100): '))	#Change number of generation
+			except:
+				self.gen = 100
 				
-				if self.iteration < self.gen:
-					parents = self.select_parents(fitness = fitness)			#Select fittest individuals
-					offspring_crossover = self.crossover(parents)				#2 point crossover
-					offspring_mutation = self.mutation(offspring = offspring_crossover)	#Reciprocal Exchange Mutation
+		if self.iteration < self.gen:
+			parents = self.select_parents(fitness = fitness)			#Select fittest individuals
+			offspring_crossover = self.crossover(parents)				#2 point crossover
+			offspring_mutation = self.mutation(offspring = offspring_crossover)	#Reciprocal Exchange Mutation
 					
-					self.population = []		#Reset for new population
+			self.population = []		#Reset for new population
 					
-					for parent in parents:
-						parent = list(parent)
-						self.population.append(parent)	# Fit individuals from last population
-					for new_pop in offspring_mutation:
-						new_pop = list(new_pop)
-						self.population.append(new_pop)	#Mutated/new individuals
+			for parent in parents:
+				parent = list(parent)
+				self.population.append(parent)	# Fit individuals from last population
+				
+			for new_pop in offspring_mutation:
+				new_pop = list(new_pop)
+				self.population.append(new_pop)	#Mutated/new individuals
 						
-					self.population = np.array(self.population)
-					self.iteration = self.iteration + 1
-					self.main()				#Recursive call
-				else:
-					idx =  self.bestPop_cost.index(min(self.bestPop_cost))
-					self.final_best_pop = self.bestPop[idx]
-					self.final_best_cost = self.bestPop_cost[idx]
+			self.population = np.array(self.population)
+			self.iteration = self.iteration + 1
+			self.main()				#Recursive call
+		else:
+			idx =  self.bestPop_cost.index(min(self.bestPop_cost))
+			self.final_best_pop = self.bestPop[idx]
+			self.final_best_cost = self.bestPop_cost[idx]
 					
-					#GETTING RELEVANT DATA: FINAL POPULATION
-					print ('\nFinal Best Population: ', self.final_best_pop, '\nCost:', self.final_best_cost)
-					pose = self.pose
-					groups = self.groupGenes(final_best_pop)
+			#GETTING RELEVANT DATA: FINAL POPULATION
+			print ('\nFinal Best Population: ', self.final_best_pop, '\nCost:', self.final_best_cost)
+			pose = self.pose
+			groups = self.groupGenes(final_best_pop)
 					
-					print('')
-					groupscost = []
-					bot_index = 0
-					for group in groups:
-						line = self.nextline(pose, group, bot_index, line = [])
-						bot_index = bot_index + 1
+			print('')
+			groupscost = []
+			bot_index = 0
+			for group in groups:
+				line = self.nextline(pose, group, bot_index, line = [])
+				bot_index = bot_index + 1
 						
-						print ('line',bot_index,line)
+				print ('line',bot_index,line)
 						
-						self.final_line.append(line)
-						c = self.groupDist(line)
-						groupscost.append(c)
+				self.final_line.append(line)
+				c = self.groupDist(line)
+				groupscost.append(c)
 					
-					print ('\nGroup wise Cost\n',groupscost)
+			print ('\nGroup wise Cost\n',groupscost)
 					
-					plt.plot(self.piterations, self.bestPop_cost, 'b-')
-					plt.xlabel('X axis')
-					plt.ylabel('Y axis')
-					plt.show()
+			plt.plot(self.piterations, self.bestPop_cost, 'b-')
+			plt.xlabel('X axis')
+			plt.ylabel('Y axis')
+			plt.show()
 
 class visualizer():
 	def __init__(self, lines):
@@ -336,18 +341,47 @@ class visualizer():
 		self.animation()
 		
 
+def get_image():
+	img = cv2.imread('test4.bmp', cv2.IMREAD_GRAYSCALE)
+	
+	black_points = []
+	y_cor = []
+	
+	for num_row, line in enumerate(img):
+		if num_row%12 == 0:
+			for num_col, column in enumerate(line):
+				if column == 0:
+					y_cor.append(num_col)
+					black_points.append([num_row, num_col])
+	
+	Points_of_Interest = []
+	#Getting corners
+	y_index = []
+	for i in range(len(y_cor) - 1):
+		if y_cor[i] == y_cor[i+1] -1 and y_cor[i] == y_cor[i-1] + 1: continue
+		y_index.append(i)
+	
+	for pts_index in y_index:
+		Points_of_Interest.append(black_points[pts_index])	#getting points of interest
+	
+	#Removinf first and last junk values
+	del Points_of_Interest[0]
+	del Points_of_Interest[-1]
+	
+	#list of lists to list of tuples
+	Points_of_Interest = [tuple(l) for l in Points_of_Interest]
+	
+	#lineset 
+	black_lines = [[Points_of_Interest[i], Points_of_Interest[i+1]] for i in range(len(Points_of_Interest)) if i%2 == 0]
+	
+	return black_lines
+	
 if __name__ == '__main__':
 	#Array of lines to be printed. Format: [(start_x, start_y), (end_x, end_y)]
-	lineSet = np.array([
-		[(1,11), (11,1)],
-		[(2,22), (22,2)],
-		[(3,33), (33,3)],
-		[(4,44), (44,4)],
-		[(5,55), (55,5)],
-	])
+	lineSet = np.array(get_image())
 	
 	#Initial position of each robot
-	pose = np.array([(0,1), (1,2), (2,3)])
+	pose = np.array([(1,1), (200,400), (400,300)])
 	test = kimLee(numBots = pose.shape[0], lines = lineSet, pose = pose)
 	test.main()
 	
