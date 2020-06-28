@@ -353,28 +353,56 @@ def get_image():
 				if column == 0:
 					y_cor.append(num_col)
 					black_points.append([num_row, num_col])
+					
+					#Handling isolated points
+					if (line[num_col + 1] == line[num_col - 1] == 255):
+						y_cor.append(num_col)		#Repeating same values
+						black_points.append([num_row, num_col])
 	
 	Points_of_Interest = []
 	#Getting corners
 	y_index = []
 	for i in range(len(y_cor) - 1):
-		if y_cor[i] == y_cor[i+1] -1 and y_cor[i] == y_cor[i-1] + 1: continue
+		if (y_cor[i] == y_cor[i+1] - 1 or y_cor[i] == y_cor[i+1] - 2) and (y_cor[i] == y_cor[i-1] + 1 or y_cor[i] == y_cor[i-1] + 2): continue
 		y_index.append(i)
 	
 	for pts_index in y_index:
 		Points_of_Interest.append(black_points[pts_index])	#getting points of interest
 	
-	#Removinf first and last junk values
-	del Points_of_Interest[0]
-	del Points_of_Interest[-1]
-	
 	#list of lists to list of tuples
 	Points_of_Interest = [tuple(l) for l in Points_of_Interest]
 	
-	#lineset 
-	black_lines = [[Points_of_Interest[i], Points_of_Interest[i+1]] for i in range(len(Points_of_Interest)) if i%2 == 0]
+	black_lines = []
+	i = 0
+	j = 1
+	while True:
+		one_line = []
+		one_line.append(Points_of_Interest[i])
+		while (Points_of_Interest[i][0] == Points_of_Interest[j][0]):
+			one_line.append(Points_of_Interest[j])
+			j = j + 1
+			if j >= len(Points_of_Interest):
+				break
+		i = i + len(one_line)
+		j = i + 1
+		
+		if len(one_line)%2 == 0:
+			black_lines.append(one_line)
+		
+		if j >= len(Points_of_Interest):
+			break
 	
-	return black_lines
+	black_lines_final = []
+	#Each element will always have even number of elements
+	for line in black_lines:
+		if len(line) == 2:
+			black_lines_final.append(line)
+		else:
+			temp_arr = [[line[i], line[i+1]] for i in range(len(line)) if i%2 == 0]
+			for temp_pts in temp_arr:
+				black_lines_final.append(temp_pts)
+	
+	return black_lines_final	#Set of all lines
 	
 if __name__ == '__main__':
 	#Array of lines to be printed. Format: [(start_x, start_y), (end_x, end_y)]
